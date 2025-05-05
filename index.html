@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Professional Ticket Sales System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2ecc71;
+      --accent-color: #f39c12;
+      --dark-text: #2c3e50;
+      --light-text: #ffffff;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #eef2f3 0%, #cfd9df 100%);
+      color: var(--dark-text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .form-container {
+      background: var(--light-text);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 650px;
+      position: relative;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      margin-top: 0;
+    }
+
+    .mode-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .mode-toggle button {
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      font-weight: 600;
+      border-radius: var(--border-radius);
+      margin: 0 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mode-toggle button.active {
+      background: var(--primary-color);
+      color: var(--light-text);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #bdc3c7;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    }
+
+    input[readonly] {
+      background: #f8f9fa;
+      cursor: not-allowed;
+    }
+
+    .profit-display {
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    button {
+      padding: 0.75rem;
+      border: none;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      font-family: inherit;
+    }
+
+    .btn-submit {
+      background-color: var(--primary-color);
+      color: var(--light-text);
+    }
+
+    .btn-submit:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-whatsapp {
+      background-color: var(--secondary-color);
+      display: none;
+    }
+
+    .btn-whatsapp:hover {
+      background-color: #27ae60;
+    }
+
+    .btn-search {
+      background-color: var(--accent-color);
+    }
+
+    .btn-search:hover {
+      background-color: #d35400;
+    }
+
+    /* Submit Button Animation */
+    .btn-submit.loading {
+      animation: pulse 1.5s infinite ease-in-out;
+      position: relative;
+      cursor: not-allowed;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+      }
+    }
+
+    /* Loading Spinner */
+    .btn-submit .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--light-text);
+      border-top: 3px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .btn-submit.loading .spinner {
+      display: inline-block;
+    }
+
+    .btn-submit.loading span {
+      visibility: hidden;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: translateY(-50%) rotate(0deg);
+      }
+      100% {
+        transform: translateY(-50%) rotate(360deg);
+      }
+    }
+
+    /* Submit Success Animation */
+    .submit-success {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--secondary-color);
+      color: var(--light-text);
+      padding: 1rem 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.5s ease;
+      z-index: 1000;
+      font-family: inherit;
+    }
+
+    .submit-success.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .checkmark-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--light-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: bounce 0.5s ease;
+    }
+
+    .checkmark {
+      width: 12px;
+      height: 12px;
+      border-right: 2px solid var(--light-text);
+      border-bottom: 2px solid var(--light-text);
+      transform: rotate(45deg);
+      margin-left: 1px;
+      margin-bottom: 1px;
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    /* Summary Section */
+    .summary-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: var(--border-radius);
+    }
+
+    .summary-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .summary-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+      background: var(--light-text);
+      border-radius: var(--border-radius);
+    }
+
+    .search-results {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: var(--border-radius);
+      display: none;
+    }
+
+    .search-results h3 {
+      color: var(--accent-color);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      background: var(--light-text);
+      border-radius: var(--border-radius);
+    }
+
+    @media (max-width: 500px) {
+      .summary-details {
+        grid-template-columns: 1fr;
+      }
+
+      .mode-toggle button {
+        flex: 1;
+      }
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: #7f8c8d;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Ticket Sales Management</h2>
+    
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+      <button type="button" id="submitMode" class="active">Submit Ticket</button>
+      <button type="button" id="searchMode">Search PNR</button>
+    </div>
+
+    <form id="salesForm">
+      <!-- Submit Mode Fields -->
+      <div id="submitFields">
+        <div class="form-group">
+          <label for="branch">Branch:</label>
+          <select name="branch" id="branch" required>
+            <option value="">-- Select Branch --</option>
+            <option value="Muhammad Shahzad">Muhammad Shahzad</option>
+            <option value="Muhammad Madni">Muhammad Madni</option>
+            <option value="Rana Usman">Rana Usman</option>
+<option value="Muhammad Tahir">Muhammad Tahir</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="customer_name">Customer Name:</label>
+          <input type="text" name="customer_name" id="customer_name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="mobile">Mobile:</label>
+          <input type="tel" name="mobile" id="mobile" required pattern="^[0-9]{10,12}$" 
+                title="Please enter a valid mobile number (10-12 digits)"/>
+        </div>
+
+        <div class="form-group">
+          <label for="pnr">PNR:</label>
+          <input type="text" name="pnr" id="pnr" required />
+        </div>
+
+        <div class="form-group">
+          <label for="ticket_price">Ticket Price (SAR):</label>
+          <input type="number" name="ticket_price" id="ticket_price" required min="0" step="0.01"/>
+        </div>
+
+        <div class="form-group">
+          <label for="cost_price">Cost Price (SAR):</label>
+          <input type="number" name="cost_price" id="cost_price" required min="0" step="0.01"/>
+        </div>
+
+        <div class="form-group">
+          <label for="total-profit">Profit (SAR):</label>
+          <input type="text" name="profit" id="total-profit" readonly class="profit-display"/>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Date:</label>
+          <input type="text" name="date" id="date" readonly/>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn-submit" id="submitBtn">Submit Ticket</button>
+          <button type="button" class="btn-whatsapp" id="whatsappBtn">Send WhatsApp</button>
+        </div>
+      </div>
+
+      <!-- Search Mode Fields -->
+      <div id="searchFields" style="display: none;">
+        <div class="form-group">
+          <label for="search_mobile">Mobile Number:</label>
+          <input type="tel" id="search_mobile" pattern="^[0-9]{10,12}$" 
+                title="Please enter a valid mobile number (10-12 digits)"/>
+        </div>
+        <div class="button-group">
+          <button type="button" class="btn-search" id="searchBtn">Search PNR</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Search Results -->
+    <div class="search-results" id="searchResults">
+      <h3>Search Results</h3>
+      <div id="resultsContainer"></div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="summary-section" id="summarySection">
+      <div class="summary-header">Ticket Details</div>
+      <div class="summary-details">
+        <div class="summary-item"><strong>Branch:</strong> <span id="sum-branch"></span></div>
+        <div class="summary-item"><strong>Name:</strong> <span id="sum-name"></span></div>
+        <div class="summary-item"><strong>PNR:</strong> <span id="sum-pnr"></span></div>
+        <div class="summary-item"><strong>Ticket Price:</strong> <span id="sum-cash"></span> SAR</div>
+        <div class="summary-item"><strong>Profit:</strong> <span id="sum-profit"></span> SAR</div>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      © 2023 Ticket Management System. All rights reserved.
+    </div>
+  </div>
+
+  <!-- Submit Success Notification -->
+  <div class="submit-success" id="submitSuccess">
+    <div class="checkmark-circle">
+      <div class="checkmark"></div>
+    </div>
+    <span>Submitted Successfully!</span>
+  </div>
+
+  <script>
+    // Initialize form elements
+    document.addEventListener('DOMContentLoaded', () => {
+      const dateInput = document.getElementById('date');
+      dateInput.value = new Date().toLocaleDateString('en-US', {
+        year: 'numeric', month: 'short', day: 'numeric'
+      });
+
+      const form = document.getElementById('salesForm');
+      const profitDisplay = document.getElementById('total-profit');
+      const whatsappBtn = document.getElementById('whatsappBtn');
+      const submitSuccess = document.getElementById('submitSuccess');
+      const summarySection = document.getElementById('summarySection');
+      const searchResults = document.getElementById('searchResults');
+      const resultsContainer = document.getElementById('resultsContainer');
+
+      // Mode toggle
+      const submitModeBtn = document.getElementById('submitMode');
+      const searchModeBtn = document.getElementById('searchMode');
+      const submitFields = document.getElementById('submitFields');
+      const searchFields = document.getElementById('searchFields');
+
+      submitModeBtn.addEventListener('click', () => {
+        submitModeBtn.classList.add('active');
+        searchModeBtn.classList.remove('active');
+        submitFields.style.display = 'block';
+        searchFields.style.display = 'none';
+        summarySection.style.display = 'block';
+        searchResults.style.display = 'none';
+      });
+
+      searchModeBtn.addEventListener('click', () => {
+        submitModeBtn.classList.remove('active');
+        searchModeBtn.classList.add('active');
+        submitFields.style.display = 'none';
+        searchFields.style.display = 'block';
+        summarySection.style.display = 'none';
+        searchResults.style.display = 'none';
+      });
+
+      // Profit calculation
+      ['input', 'change'].forEach(event => {
+        form.cost_price.addEventListener(event, calculateProfit);
+        form.ticket_price.addEventListener(event, calculateProfit);
+      });
+
+      function calculateProfit() {
+        const cost = parseFloat(form.cost_price.value) || 0;
+        const price = parseFloat(form.ticket_price.value) || 0;
+        const profit = price - cost;
+        profitDisplay.value = `${profit.toFixed(2)} SAR`;
+      }
+
+      // Show success notification
+      function showSuccessNotification() {
+        submitSuccess.classList.add('show');
+        setTimeout(() => {
+          submitSuccess.classList.remove('show');
+        }, 3000);
+      }
+
+      // Form submission handler
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        
+        // Validate form
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const formData = {
+          branch: form.branch.value,
+          customer_name: form.customer_name.value.trim(),
+          mobile: form.mobile.value.trim(),
+          pnr: form.pnr.value.trim(),
+          ticket_price: form.ticket_price.value,
+          cost_price: form.cost_price.value,
+          profit: form.profit.value.replace(" SAR", ""),
+          date: form.date.value
+        };
+
+      const webApps = {
+
+          "Muhammad Shahzad": "https://script.google.com/macros/s/AKfycbx3Ei6zZ9Zlpu2FH9-iGp3WoCVAQu-PvVEs-w7W4cXX9wzEDpOd7xSImoTYjeRnqHMncg/exec",
+
+          "Muhammad Madni": "https://script.google.com/macros/s/AKfycbwylVoPnDQBv5cEjX7s6GiRftacQMZg4WjoHgP9gyTIfRKezEm3B_8G58dTyhX3Hr5yQg/exec",
+
+          "Rana Usman": "https://script.google.com/macros/s/AKfycbyPTzAgOjpOJsxu9dATlVjwo1fWvoqqJvHlOy1kKyBHCrwQ4-z4bNuq7xc11pB84gJJWQ/exec",
+          
+          "Muhammad Tahir": "https://script.google.com/macros/s/AKfycbwaiUmrEnMaJBhOhdgtTOn2ApJST9QA9JPL3QV7F4z0qpY9BSiXpVugQAH63xapRCSh5w/exec"
+
+        };
+
+        // Show loading state with animation
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.classList.add('loading');
+        submitBtn.innerHTML = `<span class="spinner"></span><span>Submitting...</span>`;
+        submitBtn.disabled = true;
+
+        fetch(webApps[formData.branch], {
+          method: 'POST',
+          body: JSON.stringify(formData)
+        })
+        .then(res => res.text())
+        .then(() => {
+          // Update summary section
+          document.getElementById('sum-branch').textContent = formData.branch;
+          document.getElementById('sum-name').textContent = formData.customer_name;
+          document.getElementById('sum-pnr').textContent = formData.pnr;
+          document.getElementById('sum-cash').textContent = formData.ticket_price;
+          document.getElementById('sum-profit').textContent = parseFloat(formData.profit).toFixed(2);
+          
+          // Show summary section
+          summarySection.style.display = 'block';
+          
+          // Show success notification
+          showSuccessNotification();
+          
+          // Show WhatsApp button
+          whatsappBtn.style.display = 'block';
+
+          // WhatsApp message handler
+          const phoneNumber = formData.mobile.replace(/^0/, '966');
+          const message = `?? Ticket Confirmation for ${formData.customer_name}\n\n` +
+                         `?? PNR: ${formData.pnr}\n` +
+                         `?? Ticket Price: ${formData.ticket_price} SAR\n` +
+                         `?? Date: ${formData.date}\n\n` +
+                         `Thank you for choosing our service! Have a pleasant journey!\n` +
+                         `????? ????????? ??????? ????? ??? ???? ?????!`;
+
+          whatsappBtn.onclick = () => window.open(
+            `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, 
+            '_blank'
+          );
+
+          // Reset form
+          form.reset();
+          dateInput.value = new Date().toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+          });
+          profitDisplay.value = '';
+        })
+        .catch(error => {
+          console.error('Submission error:', error);
+          alert("Error submitting ticket. Please try again.");
+        })
+        .finally(() => {
+          // Reset button state
+          submitBtn.classList.remove('loading');
+          submitBtn.innerHTML = 'Submit Ticket';
+          submitBtn.disabled = false;
+        });
+      });
+
+      // PNR Search functionality
+      document.getElementById('searchBtn').addEventListener('click', () => {
+        const mobile = document.getElementById('search_mobile').value.trim();
+        
+        if (!mobile) {
+          alert('Please enter a mobile number to search');
+          return;
+        }
+
+        // Replace with your actual Google Apps Script URL for search
+        const searchUrl = "https://script.google.com/macros/s/AKfycbx3Ei6zZ9Zlpu2FH9-iGp3WoCVAQu-PvVEs-w7W4cXX9wzEDpOd7xSImoTYjeRnqHMncg/exec?mode=search";
+        
+        // Show loading state
+        const searchBtn = document.getElementById('searchBtn');
+        const originalText = searchBtn.textContent;
+        searchBtn.textContent = 'Searching...';
+        searchBtn.disabled = true;
+
+        fetch(`${searchUrl}&mobile=${encodeURIComponent(mobile)}`, {
+          method: 'GET'
+        })
+        .then(res => res.json())
+        .then(data => {
+          // Clear previous results
+          resultsContainer.innerHTML = '';
+          searchResults.style.display = 'block';
+
+          if (data.length === 0) {
+            const noResult = document.createElement('div');
+            noResult.className = 'result-item';
+            noResult.textContent = 'No matching records found';
+            resultsContainer.appendChild(noResult);
+            return;
+          }
+
+          // Display search results
+          data.forEach(item => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            resultItem.innerHTML = `<strong>${item.pnr}</strong> - ${item.customer_name} - ${item.ticket_price} SAR`;
+            resultsContainer.appendChild(resultItem);
+          });
+        })
+        .catch(error => {
+          console.error('Search error:', error);
+          alert("Error searching for PNR. Please try again.");
+        })
+        .finally(() => {
+          searchBtn.textContent = originalText;
+          searchBtn.disabled = false;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
