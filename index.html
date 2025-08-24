@@ -1,86 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Travel Agency Form</title>
+  <meta charset="UTF-8" />
+  <title>Travel Agency System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {font-family: Arial, sans-serif; background:#f8f9fa; padding:20px;}
-    h2 {color:#333;}
-    form {background:#fff; padding:15px; margin-bottom:20px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
-    label {display:block; margin-top:10px; font-weight:bold;}
-    input, textarea {width:50%; padding:8px; margin-top:5px; border:1px solid #ccc; border-radius:5px;}
-    button {margin-top:15px; padding:10px 20px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer;}
-    button:hover {background:#0056b3;}
-    #msg {margin-top:20px; font-weight:bold; color:green;}
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: linear-gradient(to right, #eef2f7, #f9fbfd);
+      padding: 40px 20px;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      background: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    /* --- Slideshow styles --- */
+    .slideshow {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto 35px auto;
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(40,110,255,0.10);
+    }
+    .slides {
+      position: relative;
+      width: 100%;
+      height: 270px;
+    }
+    .slide {
+      position: absolute;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease;
+      z-index: 1;
+    }
+    .slide.active {
+      opacity: 1;
+      z-index: 2;
+    }
+    .slide-indicators {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+    .indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #dbeafe;
+      opacity: 0.8;
+      cursor: pointer;
+      transition: background 0.4s;
+    }
+    .indicator.active {
+      background: #007bff;
+      opacity: 1;
+    }
+
+    h1 {
+      font-size: 32px;
+      text-align: center;
+      font-weight: 700;
+      color: #1a2b49;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .form-section {
+      margin-bottom: 50px;
+    }
+
+    .form-section h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #007bff;
+      margin-bottom: 20px;
+      border-left: 5px solid #007bff;
+      padding-left: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      border: 1.8px solid #ddd;
+      border-radius: 8px;
+      background: #fafafa;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #007bff;
+      background: #fff;
+      box-shadow: 0 0 6px rgba(0,123,255,0.25);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 90px;
+    }
+
+    button {
+      background: linear-gradient(45deg,#007bff, #0056b3);
+      color: #fff;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: linear-gradient(45deg,#0056b3, #003c80);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,86,177,0.4);
+    }
+
+    #msg {
+      text-align: center;
+      font-weight: 700;
+      font-size: 18px;
+      margin-top: 20px;
+      padding: 14px 10px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    #msg.success {
+      color: #2d794d;
+      background: #e7f9ee;
+      border: 1px solid #28a745;
+    }
+
+    #msg.error {
+      color: #b22d2d;
+      background: #fdeaea;
+      border: 1px solid #dc3545;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 10px;
+      }
+      .container {
+        padding: 25px;
+      }
+      button {
+        width: 100%;
+      }
+      .slideshow {
+        height: 170px;
+      }
+      .slides { height: 170px; }
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <!-- Slideshow Section -->
+    <div class="slideshow">
+      <div class="slides">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" class="slide" alt="Beach" />
+        <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80" class="slide" alt="Mountains" />
+        <img src="https://images.unsplash.com/photo-1465156799763-2c087c332922?auto=format&fit=crop&w=800&q=80" class="slide" alt="City" />
+      </div>
+      <div class="slide-indicators">
+        <span class="indicator active"></span>
+        <span class="indicator"></span>
+        <span class="indicator"></span>
+      </div>
+    </div>
 
-  <h2>Booking Form</h2>
-  <form id="bookingForm">
-    <label>Doc Date</label>
-    <input type="date" name="docDate" required>
-    <label>PNR No</label>
-    <input type="text" name="pnr" required>
-    <label>Pax Name</label>
-    <input type="text" name="paxName" required>
-    <label>Travel Date</label>
-    <input type="date" name="travelDate" required>
-    <label>Net Amount</label>
-    <input type="number" name="netAmount" required>
-    <label>Amount Paid</label>
-    <input type="number" name="amountPaid" required>
-    <button type="submit">Submit Booking</button>
-  </form>
+    <h1>Travel Agency Portal</h1>
+    <p class="subtitle">Manage Bookings & Payments with ease</p>
 
-  <h2>Payment Form</h2>
-  <form id="paymentForm">
-    <label>Date</label>
-    <input type="date" name="docDate" required>
-        <label>Cash Payment Company</label>
-    <input type="number" name="cashPayment" required>
-    <label>Remarks</label>
-    <textarea name="remarks"></textarea>
-    <button type="submit">Submit Payment</button>
-  </form>
+    <!-- Booking Form -->
+    <div class="form-section">
+      <h2>🛫 Booking Form</h2>
+      <form id="bookingForm">
+        <div class="form-group">
+          <label for="docDateBooking">Doc Date</label>
+          <input type="date" id="docDateBooking" name="docDate" required />
+        </div>
+        <div class="form-group">
+          <label for="pnrBooking">PNR No</label>
+          <input type="text" id="pnrBooking" name="pnr" required />
+        </div>
+        <div class="form-group">
+          <label for="paxName">Pax Name</label>
+          <input type="text" id="paxName" name="paxName" required />
+        </div>
+        <div class="form-group">
+          <label for="travelDate">Travel Date</label>
+          <input type="date" id="travelDate" name="travelDate" required />
+        </div>
+        <div class="form-group">
+          <label for="netAmount">Net Amount</label>
+          <input type="number" id="netAmount" name="netAmount" min="0" step="0.01" required />
+        </div>
+        <div class="form-group">
+          <label for="amountPaid">Amount Paid</label>
+          <input type="number" id="amountPaid" name="amountPaid" min="0" step="0.01" required />
+        </div>
+        <button type="submit">Submit Booking</button>
+      </form>
+    </div>
 
-  <div id="msg"></div>
+    <!-- Payment Form -->
+    <div class="form-section">
+      <h2>💳 Payment Form</h2>
+      <form id="paymentForm">
+        <div class="form-group">
+          <label for="docDatePayment">Date</label>
+          <input type="date" id="docDatePayment" name="docDate" required />
+        </div>
+        <div class="form-group">
+          <label for="pnrPayment">PNR No</label>
+          <input type="text" id="pnrPayment" name="pnr" required />
+        </div>
+        <div class="form-group">
+          <label for="cashPayment">Cash Payment Company</label>
+          <input type="number" id="cashPayment" name="cashPayment" min="0" step="0.01" required />
+        </div>
+        <div class="form-group">
+          <label for="remarks">Remarks</label>
+          <textarea id="remarks" name="remarks" placeholder="Enter any remarks here..."></textarea>
+        </div>
+        <button type="submit">Submit Payment</button>
+      </form>
+    </div>
 
+    <!-- Message -->
+    <div id="msg"></div>
+  </div>
+
+  <!-- Slideshow JavaScript -->
+  <script>
+    // Simple slideshow script
+    const slides = document.querySelectorAll('.slide');
+    const indicators = document.querySelectorAll('.indicator');
+    let currentSlide = 0;
+
+    function showSlide(n) {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === n);
+        indicators[i].classList.toggle('active', i === n);
+      });
+      currentSlide = n;
+    }
+
+    function nextSlide() {
+      showSlide((currentSlide + 1) % slides.length);
+    }
+
+    indicators.forEach((indicator, i) =>
+      indicator.addEventListener('click', () => showSlide(i))
+    );
+
+    setInterval(nextSlide, 3000);
+    showSlide(0);
+  </script>
+
+  <!-- Forms JavaScript -->
   <script>
     const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzSSYx20px9OWaVeSh4KdGS0EJx3NpZWjYyzpmFtL0PUAyJzA0GjtIsMqA5b2lTmn3i/exec";
 
-    // Booking Form Submit
+    const msgBox = document.getElementById("msg");
+
+    function showMessage(text, type){
+      msgBox.innerText = text;
+      msgBox.className = type ? type : "success";
+      msgBox.style.display = "block";
+      setTimeout(()=> msgBox.style.display="none", 4000);
+    }
+
     document.getElementById("bookingForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const formData = new FormData(this);
       formData.append("type", "Booking");
-
       fetch(WEBAPP_URL, { method: "POST", body: formData })
         .then(res => res.text())
         .then(msg => {
-          document.getElementById("msg").innerText = msg;
+          showMessage(msg, "success");
           this.reset();
         })
-        .catch(err => alert("Error: " + err));
+        .catch(err => showMessage("Error: " + err, "error"));
     });
 
-    // Payment Form Submit
     document.getElementById("paymentForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const formData = new FormData(this);
       formData.append("type", "Payment");
-
       fetch(WEBAPP_URL, { method: "POST", body: formData })
         .then(res => res.text())
         .then(msg => {
-          document.getElementById("msg").innerText = msg;
+          showMessage(msg, "success");
           this.reset();
         })
-        .catch(err => alert("Error: " + err));
+        .catch(err => showMessage("Error: " + err, "error"));
     });
   </script>
-
 </body>
 </html>
-
-
