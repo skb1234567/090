@@ -1,358 +1,905 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Travel Agency System</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Travel Agency WebApp</title>
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #1d3696;
+      --secondary: #0d9488;
+      --accent: #fdba74;
+      --light-bg: #f8fafc;
+      --card-bg: #ffffff;
+      --shadow: 0 4px 20px rgba(0,0,0,0.05);
+      --border-radius: 16px;
     }
 
     body {
-      font-family: 'Roboto', Arial, sans-serif;
-      background: linear-gradient(to right, #eef2f7, #f9fbfd);
-      padding: 40px 20px;
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: #1e293b;
+      padding-top: 12px;
     }
 
-    .container {
-      max-width: 1000px;
-      width: 100%;
-      background: #fff;
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    /* --- Slideshow styles --- */
-    .slideshow {
-      width: 100%;
-      max-width: 800px;
-      margin: 0 auto 35px auto;
-      position: relative;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 6px 24px rgba(40,110,255,0.10);
-    }
-    .slides {
-      position: relative;
-      width: 100%;
-      height: 270px;
-    }
-    .slide {
-      position: absolute;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      opacity: 0;
-      transition: opacity 1s ease;
-      z-index: 1;
-    }
-    .slide.active {
-      opacity: 1;
-      z-index: 2;
-    }
-    .slide-indicators {
-      position: absolute;
-      bottom: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
-    }
-    .indicator {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #dbeafe;
-      opacity: 0.8;
-      cursor: pointer;
-      transition: background 0.4s;
-    }
-    .indicator.active {
-      background: #007bff;
-      opacity: 1;
-    }
-
-    h1 {
-      font-size: 32px;
-      text-align: center;
+    .navbar-brand {
       font-weight: 700;
-      color: #1a2b49;
-      margin-bottom: 10px;
+      font-size: 1.5rem;
+      color: var(--primary);
     }
 
-    p.subtitle {
+    .card {
+      border: 0;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      background: var(--card-bg);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .btn {
+      border-radius: 12px;
+      font-weight: 600;
+      padding: 0.6rem 1.25rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+
+    .btn-success {
+      background-color: var(--secondary);
+      border-color: var(--secondary);
+    }
+
+    .badge {
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .nav-pills .nav-link {
+      border-radius: 12px;
+      padding: 0.6rem 1.25rem;
+      font-weight: 600;
+      color: #475569;
+      transition: all 0.25s ease;
+    }
+
+    .nav-pills .nav-link.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .nav-pills .nav-link:hover:not(.active) {
+      background-color: #f1f5f9;
+    }
+
+    .small-muted {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .table thead th {
+      white-space: nowrap;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    /* Dashboard stat cards */
+    .stat-card {
       text-align: center;
-      color: #666;
-      margin-bottom: 40px;
+      padding: 1.25rem;
     }
-
-    .form-section {
-      margin-bottom: 50px;
+    .stat-card .title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 0.5rem;
     }
-
-    .form-section h2 {
-      font-size: 22px;
+    .stat-card .value {
+      font-size: 1.5rem;
       font-weight: 700;
-      color: #007bff;
-      margin-bottom: 20px;
-      border-left: 5px solid #007bff;
-      padding-left: 12px;
+      color: var(--primary);
     }
 
-    .form-group {
-      margin-bottom: 20px;
+    /* Header enhancements */
+    .app-header {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 1rem 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
     }
 
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #444;
+    /* Section dividers */
+    .section-title {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
     }
 
-    input[type="text"],
-    input[type="date"],
-    input[type="number"],
-    textarea {
-      width: 100%;
-      padding: 12px;
-      font-size: 15px;
-      border: 1.8px solid #ddd;
-      border-radius: 8px;
-      background: #fafafa;
-      transition: all 0.3s ease;
-      font-family: inherit;
-      resize: vertical;
+    .section-subtitle {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
     }
 
-    input:focus,
-    textarea:focus {
-      border-color: #007bff;
-      background: #fff;
-      box-shadow: 0 0 6px rgba(0,123,255,0.25);
-      outline: none;
+    /* Inputs */
+    .form-control, .form-select {
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      padding: 0.6rem 1rem;
     }
 
-    textarea {
-      min-height: 90px;
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
     }
 
-    button {
-      background: linear-gradient(45deg,#007bff, #0056b3);
-      color: #fff;
-      font-weight: 600;
-      font-size: 16px;
-      padding: 14px 24px;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+      .navbar-brand span { display: none; }
+      .stat-card .value { font-size: 1.25rem; }
+      .nav-pills { flex-wrap: wrap; }
+    }
+
+    /* Animation for transitions */
+    .fade-in {
+      animation: fadeIn 0.6s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 12px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background: linear-gradient(45deg,#0056b3, #003c80);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0,86,177,0.4);
-    }
-
-    #msg {
-      text-align: center;
-      font-weight: 700;
-      font-size: 18px;
-      margin-top: 20px;
-      padding: 14px 10px;
-      border-radius: 8px;
-      display: none;
-    }
-
-    #msg.success {
-      color: #2d794d;
-      background: #e7f9ee;
-      border: 1px solid #28a745;
-    }
-
-    #msg.error {
-      color: #b22d2d;
-      background: #fdeaea;
-      border: 1px solid #dc3545;
-    }
-
-    /* Responsive */
-    @media (max-width: 600px) {
-      body {
-        padding: 20px 10px;
-      }
-      .container {
-        padding: 25px;
-      }
-      button {
-        width: 100%;
-      }
-      .slideshow {
-        height: 170px;
-      }
-      .slides { height: 170px; }
+      color: white;
+      font-weight: bold;
+      margin-right: 12px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Slideshow Section -->
-    <div class="slideshow">
-      <div class="slides">
-        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiIeG0J59B4LfAvVOFZTbGVQCnPkqYsJGce7iQJ7wrkH6mvimEbvL0X6UqW2zy0BvpoeroxXDikTsyCLh8bbbuE35B3whyOGr1-Uy59ytkIvycCFoY2ncqXzRu_G67vVzod7Ojk_TS2io3_62y6uML3ooStoTs5DD3CraftbEC20la1UwEGZ-8ZO9P1-ENi/s1600/travel-planning-online_1306261-3232.jpg" class="slide" alt="Beach" />
-        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg0sBJA4oEVoJSk4rEi7p9xsl1VkVzCGJdfIzfpftT49XhVLpqREr-KBCBVBWCBS9Sa5eG1QVoKHqORHb7ZdgvF7ixCVnYl-1Nyua_g9FghuzIBthV5t5HCwVVEOz3wzOoGjFIkPtlatPNeCoLYx3-n3Ut6i6VDZWxcQ5gs-zT9X4w1u5oiHj8iJHwnCiwR/s1600/mail.google%20%282%29.jpg" class="slide" alt="Mountains" />
-        <img src="https://images.unsplash.com/photo-1465156799763-2c087c332922?auto=format&fit=crop&w=800&q=80" class="slide" alt="City" />
+  <div class="container-fluid px-4">
+    <!-- Enhanced Header -->
+    <div class="app-header d-flex align-items-center justify-content-between mb-4 fade-in">
+      <div class="d-flex align-items-center">
+        <div class="header-icon">✈️</div>
+        <div>
+          <h4 class="mb-0">Travel Agency WebApp</h4>
+          <div class="small-muted" id="whoami">Not logged in</div>
+        </div>
       </div>
-      <div class="slide-indicators">
-        <span class="indicator active"></span>
-        <span class="indicator"></span>
-        <span class="indicator"></span>
+      <div>
+        <button class="btn btn-outline-secondary d-none" id="btnLogout">Logout</button>
       </div>
     </div>
 
-    <h1>Travel Agency Portal</h1>
-    <p class="subtitle">Manage Bookings & Payments with ease</p>
-
-    <!-- Booking Form -->
-    <div class="form-section">
-      <h2>🛫 Booking Form</h2>
-      <form id="bookingForm">
-        <div class="form-group">
-          <label for="docDateBooking">Doc Date</label>
-          <input type="date" id="docDateBooking" name="docDate" required />
+    <!-- LOGIN -->
+    <div class="card p-4 mb-4 fade-in" id="loginCard">
+      <h5 class="mb-3 text-center">🔐 Agency Login</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Username</label>
+          <input class="form-control" id="lgUser" placeholder="e.g., admin">
         </div>
-        <div class="form-group">
-          <label for="pnrBooking">PNR No</label>
-          <input type="text" id="pnrBooking" name="pnr" required />
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Password</label>
+          <input class="form-control" id="lgPass" placeholder="••••••••" type="password">
         </div>
-        <div class="form-group">
-          <label for="paxName">Pax Name</label>
-          <input type="text" id="paxName" name="paxName" required />
+        <div class="col-md-4 d-grid align-self-end">
+          <button class="btn btn-primary" id="btnLogin">Login to Dashboard</button>
         </div>
-        <div class="form-group">
-          <label for="travelDate">Travel Date</label>
-          <input type="date" id="travelDate" name="travelDate" required />
-        </div>
-        <div class="form-group">
-          <label for="netAmount">Net Amount</label>
-          <input type="number" id="netAmount" name="netAmount" min="0" step="0.01" required />
-        </div>
-        <div class="form-group">
-          <label for="amountPaid">Amount Paid</label>
-          <input type="number" id="amountPaid" name="amountPaid" min="0" step="0.01" required />
-        </div>
-        <button type="submit">Submit Booking</button>
-      </form>
+      </div>
+      <div class="mt-3 text-danger small text-center" id="loginMsg"></div>
     </div>
 
-    <!-- Payment Form -->
-    <div class="form-section">
-      <h2>💳 Payment Form</h2>
-      <form id="paymentForm">
-        <div class="form-group">
-          <label for="docDatePayment">Date</label>
-          <input type="date" id="docDatePayment" name="docDate" required />
-        </div>
-       
-        <div class="form-group">
-          <label for="cashPayment">Cash Payment Company</label>
-          <input type="number" id="cashPayment" name="cashPayment" min="0" step="0.01" required />
-        </div>
-        <div class="form-group">
-          <label for="remarks">Remarks</label>
-          <textarea id="remarks" name="remarks" placeholder="Enter any remarks here..."></textarea>
-        </div>
-        <button type="submit">Submit Payment</button>
-      </form>
-    </div>
+    <!-- APP -->
+    <div id="app" class="d-none">
 
-    <!-- Message -->
-    <div id="msg"></div>
+      <!-- NAV TABS -->
+      <ul class="nav nav-pills gap-2 mb-4 p-2 bg-gray-100 rounded-3 fade-in">
+        <li class="nav-item"><button class="nav-link active" data-tab="dash">📊 Dashboard</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="add">➕ Add Booking</button></li>
+        <li class="nav-item"><button class="nav-link" data-tab="search">🔍 Search Records</button></li>
+        <li class="nav-item d-none" id="tabRecycleWrap"><button class="nav-link" data-tab="recycle">🗑️ Recycle Bin</button></li>
+      </ul>
+
+      <!-- DASHBOARD -->
+      <div id="tab-dash" class="fade-in">
+        <!-- Stats Cards -->
+        <div class="row g-3 mb-4" id="dashCards"></div>
+
+        <!-- Charts -->
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card p-4 h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h6 class="section-title">Today Sale vs Profit</h6>
+                  <div class="small-muted">Auto-calculated from live data</div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" id="btnRefreshDash">🔄 Refresh</button>
+              </div>
+              <canvas id="chToday" height="140"></canvas>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card p-4 h-100">
+              <h6 class="section-title">Month Sale vs Profit</h6>
+              <div class="small-muted mb-2">Updated in real-time</div>
+              <canvas id="chMonth" height="140"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD BOOKING -->
+      <div id="tab-add" class="d-none fade-in">
+        <div class="card p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="section-title">➕ Add New Booking</h5>
+              <p class="small-muted mb-0">All fields update profit & pending automatically</p>
+            </div>
+            <span class="badge text-bg-light px-3 py-2" id="invHint">Invoice: Auto-generated</span>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-3 d-none" id="adminBranchWrap">
+              <label class="form-label small text-muted">Branch</label>
+              <select class="form-select" id="bkBranch">
+                <option value="Shahzad">Shahzad</option>
+                <option value="Madni">Madni</option>
+                <option value="Usman">Usman</option>
+                <option value="Tahir">Tahir</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Customer Name</label>
+              <input class="form-control" id="bkCustomer" placeholder="e.g., Ali Khan">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Mobile</label>
+              <input class="form-control" id="bkMobile" placeholder="+92...">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small text-muted">PNR / Ticket #</label>
+              <input class="form-control" id="bkPNR" placeholder="ABC123">
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Trip Type</label>
+              <select class="form-select" id="bkTrip">
+                <option>One Way</option>
+                <option>Two Way</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Travel Date</label>
+              <input class="form-control" id="bkTravel" type="date">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Return Date</label>
+              <input class="form-control" id="bkReturn" type="date">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Airline</label>
+              <input class="form-control" id="bkAirline" placeholder="e.g., PIA, Emirates">
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Cost Price (PKR)</label>
+              <input class="form-control" id="bkCost" placeholder="15,000">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Sale Price (PKR)</label>
+              <input class="form-control" id="bkSale" placeholder="20,000">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Cash Received</label>
+              <input class="form-control" id="bkCash" placeholder="0" value="0">
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Payment Mode</label>
+              <select class="form-select" id="bkPayMode">
+                <option>Cash</option>
+                <option>Bank</option>
+                <option>Card</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Status</label>
+              <select class="form-select" id="bkStatus">
+                <option>On Hold</option>
+                <option>Issued</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Profit (auto)</label>
+              <input class="form-control bg-light" id="bkProfit" placeholder="—" readonly>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Pending (auto)</label>
+              <input class="form-control bg-light" id="bkPending" placeholder="—" readonly>
+            </div>
+
+            <div class="col-12 d-grid mt-2">
+              <button class="btn btn-success btn-lg" id="btnAdd">✅ Save & Confirm Booking</button>
+            </div>
+          </div>
+
+          <div class="mt-3 text-center small" id="addMsg"></div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div id="tab-search" class="d-none fade-in">
+        <div class="card p-4 mb-4">
+          <h6 class="section-title">🔍 Advanced Search</h6>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <input class="form-control" id="srQuery" placeholder="PNR, Mobile, or Customer Name">
+            </div>
+            <div class="col-md-2 d-none" id="adminBranchFilterWrap">
+              <select class="form-select" id="srBranch">
+                <option value="ALL">All Branches</option>
+                <option value="Shahzad">Shahzad</option>
+                <option value="Madni">Madni</option>
+                <option value="Usman">Usman</option>
+                <option value="Tahir">Tahir</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <select class="form-select" id="srDateMode">
+                <option value="">All Time</option>
+                <option value="TODAY">Today</option>
+                <option value="MONTH">This Month</option>
+              </select>
+            </div>
+            <div class="col-md-2 d-grid">
+              <button class="btn btn-primary" id="btnSearch">🔎 Search Records</button>
+            </div>
+          </div>
+          <div class="small text-muted mt-2">💡 Admin: Edit/Delete actions appear in results table.</div>
+        </div>
+
+        <div class="card p-4">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Branch</th><th>Inv</th><th>Name</th><th>Mobile</th><th>PNR</th><th>Trip</th>
+                  <th>Travel</th><th>Return</th><th>Airline</th>
+                  <th>Cost</th><th>Sale</th><th>Profit</th><th>Cash</th><th>Pending</th>
+                  <th>Pay</th><th>Status</th><th>DateTime</th>
+                  <th id="thAdminActions" class="d-none">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="srBody"></tbody>
+            </table>
+          </div>
+          <div class="small text-muted text-center mt-3" id="srCount"></div>
+        </div>
+      </div>
+
+      <!-- RECYCLE BIN -->
+      <div id="tab-recycle" class="d-none fade-in">
+        <div class="card p-4 mb-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="section-title">🗑️ Recycle Bin</h6>
+              <p class="small-muted mb-0">Restore accidentally deleted bookings</p>
+            </div>
+            <button class="btn btn-outline-primary" id="btnLoadDeleted">📥 Load Deleted</button>
+          </div>
+        </div>
+
+        <div class="card p-4">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Branch</th><th>Inv</th><th>Name</th><th>Mobile</th><th>PNR</th><th>Sale</th><th>Status</th><th>Restore</th>
+                </tr>
+              </thead>
+              <tbody id="delBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Slideshow JavaScript -->
-  <script>
-    // Simple slideshow script
-    const slides = document.querySelectorAll('.slide');
-    const indicators = document.querySelectorAll('.indicator');
-    let currentSlide = 0;
+  <!-- EDIT MODAL -->
+  <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content" style="border-radius:16px">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title text-primary">✏️ Edit Booking</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <div class="small text-muted mb-3 p-2 bg-light rounded" id="editMeta">Loading...</div>
 
-    function showSlide(n) {
-      slides.forEach((slide, i) => {
-        slide.classList.toggle('active', i === n);
-        indicators[i].classList.toggle('active', i === n);
+          <div class="row g-3">
+            <div class="col-md-4">
+              <input class="form-control" id="edCustomer" placeholder="Customer Name">
+            </div>
+            <div class="col-md-4">
+              <input class="form-control" id="edMobile" placeholder="Mobile">
+            </div>
+            <div class="col-md-4">
+              <input class="form-control" id="edPNR" placeholder="PNR / Ticket">
+            </div>
+
+            <div class="col-md-4">
+              <select class="form-select" id="edTrip">
+                <option>One Way</option>
+                <option>Two Way</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <input class="form-control" id="edTravel" type="date">
+            </div>
+            <div class="col-md-4">
+              <input class="form-control" id="edReturn" type="date">
+            </div>
+
+            <div class="col-md-4">
+              <input class="form-control" id="edAirline" placeholder="Airline">
+            </div>
+            <div class="col-md-4">
+              <input class="form-control" id="edCost" placeholder="Cost Price">
+            </div>
+            <div class="col-md-4">
+              <input class="form-control" id="edSale" placeholder="Sale Price">
+            </div>
+
+            <div class="col-md-4">
+              <input class="form-control" id="edCash" placeholder="Cash Received">
+            </div>
+            <div class="col-md-4">
+              <select class="form-select" id="edPay">
+                <option>Cash</option><option>Bank</option><option>Card</option><option>Other</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <select class="form-select" id="edStatus">
+                <option>On Hold</option><option>Issued</option><option>Deleted</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <input class="form-control bg-light" id="edProfit" placeholder="Profit (auto)" readonly>
+              <div class="small text-muted mt-1">Sale − Cost</div>
+            </div>
+            <div class="col-md-6">
+              <input class="form-control bg-light" id="edPending" placeholder="Pending (auto)" readonly>
+              <div class="small text-muted mt-1">Sale − Cash</div>
+            </div>
+          </div>
+
+          <div class="text-danger small mt-3 text-center" id="edMsg"></div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" id="btnSaveEdit">💾 Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    /************ STATE ************/
+    const $ = (id)=>document.getElementById(id);
+    let state = { username: "", role: "", branch: "" };
+    let charts = { today: null, month: null };
+    let editCtx = { sheet:"", rowNumber:0 };
+
+    function saveSession(u){ localStorage.setItem("ta_session", JSON.stringify(u)); }
+    function loadSession(){
+      try { return JSON.parse(localStorage.getItem("ta_session")||"null"); } catch(e){ return null; }
+    }
+    function clearSession(){ localStorage.removeItem("ta_session"); }
+
+    /************ API CALL ************/
+    async function api(action, data){
+      const body = new URLSearchParams({ action, ...data });
+      const r = await fetch("https://script.google.com/macros/s/AKfycbyoqxlvdSGvTWGYKp9sQuB2U9lfDzGKY6VfuzUahwNoDTgxY2aChR5V_fvaHB-mw00/exec", { method:"POST", body });
+      return await r.json();
+    }
+
+    function money(x){
+      const n = Number(String(x||"0").replace(/,/g,""));
+      return isNaN(n) ? "0" : n.toLocaleString();
+    }
+    function calcProfitPending(cost, sale, cash){
+      cost = Number(String(cost||"0").replace(/,/g,""))||0;
+      sale = Number(String(sale||"0").replace(/,/g,""))||0;
+      cash = Number(String(cash||"0").replace(/,/g,""))||0;
+      return { profit: sale-cost, pending: sale-cash };
+    }
+
+    /************ UI NAV ************/
+    document.querySelectorAll(".nav-link").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        document.querySelectorAll(".nav-link").forEach(x=>x.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.getAttribute("data-tab");
+        ["dash","add","search","recycle"].forEach(t=>{
+          const el = $("tab-"+t);
+          if(el) el.classList.toggle("d-none", t!==tab);
+        });
+        // Fade-in animation on tab switch
+        if (el && !el.classList.contains('d-none')) el.classList.add('fade-in');
       });
-      currentSlide = n;
-    }
-
-    function nextSlide() {
-      showSlide((currentSlide + 1) % slides.length);
-    }
-
-    indicators.forEach((indicator, i) =>
-      indicator.addEventListener('click', () => showSlide(i))
-    );
-
-    setInterval(nextSlide, 3000);
-    showSlide(0);
-  </script>
-
-  <!-- Forms JavaScript -->
-  <script>
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzSSYx20px9OWaVeSh4KdGS0EJx3NpZWjYyzpmFtL0PUAyJzA0GjtIsMqA5b2lTmn3i/exec";
-
-    const msgBox = document.getElementById("msg");
-
-    function showMessage(text, type){
-      msgBox.innerText = text;
-      msgBox.className = type ? type : "success";
-      msgBox.style.display = "block";
-      setTimeout(()=> msgBox.style.display="none", 4000);
-    }
-
-    document.getElementById("bookingForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      formData.append("type", "Booking");
-      fetch(WEBAPP_URL, { method: "POST", body: formData })
-        .then(res => res.text())
-        .then(msg => {
-          showMessage(msg, "success");
-          this.reset();
-        })
-        .catch(err => showMessage("Error: " + err, "error"));
     });
 
-    document.getElementById("paymentForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      formData.append("type", "Payment");
-      fetch(WEBAPP_URL, { method: "POST", body: formData })
-        .then(res => res.text())
-        .then(msg => {
-          showMessage(msg, "success");
-          this.reset();
-        })
-        .catch(err => showMessage("Error: " + err, "error"));
+    /************ LOGIN ************/
+    $("btnLogin").addEventListener("click", async ()=>{
+      $("loginMsg").textContent = "";
+      const username = $("lgUser").value.trim();
+      const password = $("lgPass").value.trim();
+      if(!username || !password){ $("loginMsg").textContent = "⚠️ Enter username & password"; return; }
+
+      const res = await api("login", { username, password });
+      if(!res.ok){ $("loginMsg").textContent = res.message || "Login failed"; return; }
+
+      state = res.user;
+      saveSession(state);
+      afterLogin();
     });
+
+    $("btnLogout").addEventListener("click", ()=>{
+      clearSession();
+      location.reload();
+    });
+
+    function afterLogin(){
+      $("loginCard").classList.add("d-none");
+      $("app").classList.remove("d-none");
+      $("btnLogout").classList.remove("d-none");
+      $("whoami").textContent = `Logged in: ${state.username} | ${state.role} | ${state.branch}`;
+
+      const isAdmin = String(state.role).toLowerCase()==="admin";
+
+      // admin-only controls
+      $("adminBranchWrap").classList.toggle("d-none", !isAdmin);
+      $("adminBranchFilterWrap").classList.toggle("d-none", !isAdmin);
+      $("thAdminActions").classList.toggle("d-none", !isAdmin);
+      $("tabRecycleWrap").classList.toggle("d-none", !isAdmin);
+
+      // Load dashboard
+      document.querySelector('[data-tab="dash"]').click();
+      refreshDash();
+    }
+
+    /************ DASHBOARD ************/
+    $("btnRefreshDash").addEventListener("click", refreshDash);
+
+    async function refreshDash(){
+      const res = await api("dashboard", { username: state.username, role: state.role, branch: state.branch });
+      if(!res.ok) return;
+
+      const d = res.dash;
+      const cards = [
+        { title:"Today Sale", val: money(d.todaySale), icon:"💰" },
+        { title:"Today Profit", val: money(d.todayProfit), icon:"📈" },
+        { title:"Month Sale", val: money(d.monthSale), icon:"📊" },
+        { title:"Month Profit", val: money(d.monthProfit), icon:"💎" },
+        { title:"Pending Total", val: money(d.pendingTotal), icon:"⏳" },
+        { title:"Issued Today", val: String(d.issuedToday), icon:"✅" },
+        { title:"On Hold Today", val: String(d.holdToday), icon:"⏸️" },
+      ];
+
+      $("dashCards").innerHTML = cards.map(c=>
+        `<div class="col-md-3 col-6 fade-in" style="animation-delay:${cards.indexOf(c)*0.1}s">
+          <div class="card stat-card">
+            <div class="title">${c.title}</div>
+            <div class="value">${c.val}</div>
+            <div class="mt-1">${c.icon}</div>
+          </div>
+        </div>`
+      ).join("");
+
+      // charts
+      const ctxT = $("chToday");
+      const ctxM = $("chMonth");
+      if(charts.today) charts.today.destroy();
+      if(charts.month) charts.month.destroy();
+
+      charts.today = new Chart(ctxT, {
+        type:"bar",
+        data:{ labels:["Sale","Profit"], datasets:[{ 
+          data:[d.todaySale, d.todayProfit],
+          backgroundColor: ["#93c5fd", "#34d399"]
+        }] },
+        options:{ 
+          responsive:true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      charts.month = new Chart(ctxM, {
+        type:"bar",
+        data:{ labels:["Sale","Profit"], datasets:[{
+          data:[d.monthSale, d.monthProfit],
+          backgroundColor: ["#60a5fa", "#10b981"]
+        }] },
+        options:{ 
+          responsive:true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+
+    /************ ADD BOOKING ************/
+    ["bkCost","bkSale","bkCash"].forEach(id=>{
+      $(id).addEventListener("input", ()=>{
+        const r = calcProfitPending($("bkCost").value, $("bkSale").value, $("bkCash").value);
+        $("bkProfit").value = money(r.profit);
+        $("bkPending").value = money(r.pending);
+      });
+    });
+
+    $("btnAdd").addEventListener("click", async ()=>{
+      $("addMsg").textContent = "";
+      const isAdmin = String(state.role).toLowerCase()==="admin";
+
+      const payload = {
+        username: state.username,
+        role: state.role,
+        targetBranch: isAdmin ? $("bkBranch").value : "",
+        customerName: $("bkCustomer").value.trim(),
+        mobile: $("bkMobile").value.trim(),
+        pnr: $("bkPNR").value.trim(),
+        tripType: $("bkTrip").value,
+        travelDate: $("bkTravel").value,
+        returnDate: $("bkReturn").value,
+        airline: $("bkAirline").value.trim(),
+        costPrice: $("bkCost").value.trim(),
+        salePrice: $("bkSale").value.trim(),
+        cashReceived: $("bkCash").value.trim(),
+        paymentMode: $("bkPayMode").value,
+        bookingStatus: $("bkStatus").value
+      };
+
+      const res = await api("addBooking", payload);
+      if(!res.ok){ 
+        $("addMsg").textContent = "❌ " + (res.message || "Save failed"); 
+        $("addMsg").className="mt-2 small text-danger";
+        return; 
+      }
+
+      $("addMsg").textContent = `✅ Saved! Invoice: ${res.invoice}`;
+      $("addMsg").className="mt-2 small text-success";
+
+      // clear form
+      ["bkCustomer","bkMobile","bkPNR","bkAirline","bkCost","bkSale"].forEach(x=>$(x).value="");
+      $("bkCash").value="0";
+      $("bkProfit").value="";
+      $("bkPending").value="";
+      refreshDash();
+    });
+
+    /************ SEARCH ************/
+    $("btnSearch").addEventListener("click", runSearch);
+
+    async function runSearch(includeDeleted=false){
+      $("srBody").innerHTML = "";
+      $("srCount").textContent = "⏳ Loading...";
+      const isAdmin = String(state.role).toLowerCase()==="admin";
+
+      const payload = {
+        username: state.username,
+        query: $("srQuery").value.trim(),
+        dateMode: $("srDateMode").value,
+        branch: isAdmin ? $("srBranch").value : "",
+        includeDeleted: includeDeleted ? "1" : ""
+      };
+
+      const res = await api("search", payload);
+      if(!res.ok){ $("srCount").textContent = "❌ " + (res.message || "Search failed"); return; }
+
+      const rows = res.rows || [];
+      $("srCount").textContent = `✅ Found ${rows.length} record${rows.length!==1?'s':''}`;
+
+      $("srBody").innerHTML = rows.map(r=>{
+        const d = r.data || {};
+        return `<tr>
+          <td>${d["Branch"]||r.sheet}</td>
+          <td>${d["Invoice No"]||""}</td>
+          <td>${d["Customer Name"]||""}</td>
+          <td>${d["Mobile"]||""}</td>
+          <td>${d["PNR / Ticket"]||""}</td>
+          <td>${d["Trip Type"]||""}</td>
+          <td>${d["Travel Date"]||""}</td>
+          <td>${d["Return Date"]||""}</td>
+          <td>${d["Airline"]||""}</td>
+          <td class="text-end">${money(d["Cost Price"])}</td>
+          <td class="text-end">${money(d["Sale Price"])}</td>
+          <td class="text-end text-success">${money(d["Profit"])}</td>
+          <td class="text-end">${money(d["Cash Received"])}</td>
+          <td class="text-end text-warning">${money(d["Pending"])}</td>
+          <td>${d["Payment Mode"]||""}</td>
+          <td><span class="badge ${d["Booking Status"]==="Issued"?"bg-success":"bg-warning"}">${d["Booking Status"]||""}</span></td>
+          <td>${d["Date & Time"]||""}</td>
+          ${isAdmin ? `<td>
+            <button class="btn btn-sm btn-outline-primary" onclick="openEdit('${r.sheet}', ${r.rowNumber})">✏️</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="softDelete('${r.sheet}', ${r.rowNumber})">🗑️</button>
+            <button class="btn btn-sm btn-outline-success" onclick="waMsg('${d["Mobile"]||""}','${d["PNR / Ticket"]||""}','${d["Customer Name"]||""}','${d["Travel Date"]||""}','${money(d["Sale Price"])}','${money(d["Pending"])}')">📱</button>
+          </td>` : ""} 
+        </tr>`;
+      }).join("");
+    }
+
+    /************ ADMIN EDIT/DELETE/RESTORE ************/
+    window.softDelete = async (sheet, rowNumber)=>{
+      if(!confirm("⚠️ Soft delete this booking?")) return;
+      const res = await api("deleteBooking", { username: state.username, sheet, rowNumber });
+      if(!res.ok){ alert("❌ "+(res.message||"Failed")); return; }
+      alert("✅ Deleted to recycle bin");
+      runSearch();
+      refreshDash();
+    };
+
+    window.openEdit = async (sheet, rowNumber)=>{
+      const res = await api("getRow", { username: state.username, sheet, rowNumber });
+      if(!res.ok){ alert("❌ "+(res.message||"Fetch failed")); return; }
+
+      editCtx = { sheet, rowNumber };
+      const d = res.data;
+
+      $("editMeta").textContent = `Sheet: ${sheet} • Row: ${rowNumber} • Invoice: ${d["Invoice No"] || "N/A"}`;
+
+      $("edCustomer").value = d["Customer Name"]||"";
+      $("edMobile").value = d["Mobile"]||"";
+      $("edPNR").value = d["PNR / Ticket"]||"";
+      $("edTrip").value = d["Trip Type"]||"One Way";
+      $("edTravel").value = d["Travel Date"]||"";
+      $("edReturn").value = d["Return Date"]||"";
+      $("edAirline").value = d["Airline"]||"";
+      $("edCost").value = d["Cost Price"]||"";
+      $("edSale").value = d["Sale Price"]||"";
+      $("edCash").value = d["Cash Received"]||"0";
+      $("edPay").value = d["Payment Mode"]||"Cash";
+      $("edStatus").value = d["Booking Status"]||"On Hold";
+
+      const rr = calcProfitPending($("edCost").value, $("edSale").value, $("edCash").value);
+      $("edProfit").value = money(rr.profit);
+      $("edPending").value = money(rr.pending);
+
+      $("edMsg").textContent = "";
+      new bootstrap.Modal(document.getElementById("editModal")).show();
+    };
+
+    ["edCost","edSale","edCash"].forEach(id=>{
+      $(id).addEventListener("input", ()=>{
+        const r = calcProfitPending($("edCost").value, $("edSale").value, $("edCash").value);
+        $("edProfit").value = money(r.profit);
+        $("edPending").value = money(r.pending);
+      });
+    });
+
+    $("btnSaveEdit").addEventListener("click", async ()=>{
+      $("edMsg").textContent = "";
+      const p = {
+        username: state.username,
+        sheet: editCtx.sheet,
+        rowNumber: editCtx.rowNumber,
+        customerName: $("edCustomer").value.trim(),
+        mobile: $("edMobile").value.trim(),
+        pnr: $("edPNR").value.trim(),
+        tripType: $("edTrip").value,
+        travelDate: $("edTravel").value,
+        returnDate: $("edReturn").value,
+        airline: $("edAirline").value.trim(),
+        costPrice: $("edCost").value.trim(),
+        salePrice: $("edSale").value.trim(),
+        cashReceived: $("edCash").value.trim(),
+        paymentMode: $("edPay").value,
+        bookingStatus: $("edStatus").value
+      };
+
+      const res = await api("updateBooking", p);
+      if(!res.ok){ $("edMsg").textContent = "❌ "+(res.message||"Update failed"); return; }
+
+      bootstrap.Modal.getInstance(document.getElementById("editModal")).hide();
+      runSearch();
+      refreshDash();
+      setTimeout(()=>alert("✅ Booking updated successfully!"), 100);
+    });
+
+    // Recycle Bin
+    $("btnLoadDeleted").addEventListener("click", async ()=>{
+      const res = await api("search", {
+        username: state.username,
+        query: "",
+        dateMode: "",
+        branch: "ALL",
+        includeDeleted: "1"
+      });
+      if(!res.ok){ alert("❌ "+(res.message||"Load failed")); return; }
+
+      const del = (res.rows||[]).filter(x => String((x.data||{})["Booking Status"]||"").toLowerCase()==="deleted");
+      $("delBody").innerHTML = del.map(r=>{
+        const d = r.data||{};
+        return `<tr>
+          <td>${r.sheet}</td>
+          <td>${d["Invoice No"]||""}</td>
+          <td>${d["Customer Name"]||""}</td>
+          <td>${d["Mobile"]||""}</td>
+          <td>${d["PNR / Ticket"]||""}</td>
+          <td class="text-end">${money(d["Sale Price"])}</td>
+          <td><span class="badge bg-danger">Deleted</span></td>
+          <td><button class="btn btn-sm btn-success" onclick="restoreRow('${r.sheet}', ${r.rowNumber})">↩️ Restore</button></td>
+        </tr>`;
+      }).join("");
+    });
+
+    window.restoreRow = async (sheet, rowNumber)=>{
+      if(!confirm("Restore this booking to 'On Hold' status?")) return;
+      const res = await api("restoreBooking", { username: state.username, sheet, rowNumber, restoreTo:"On Hold" });
+      if(!res.ok){ alert("❌ "+(res.message||"Restore failed")); return; }
+      alert("✅ Restored successfully");
+      $("btnLoadDeleted").click();
+      runSearch();
+      refreshDash();
+    };
+
+    /************ WHATSAPP ************/
+    window.waMsg = (mobile, pnr, name, travel, sale, pending)=>{
+      const text = `✈️ *Booking Invoice*\n\n👤 Name: ${name}\n🎫 PNR: ${pnr}\n📅 Travel: ${travel}\n💸 Total: ${sale}\n⏳ Pending: ${pending}`;
+      const url = `https://wa.me/${mobile}?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank");
+    };
+
+    /************ AUTO LOAD SESSION ************/
+    (function init(){
+      const sess = loadSession();
+      if(sess && sess.username){
+        state = sess;
+        afterLogin();
+      }
+    })();
   </script>
 </body>
 </html>
+
